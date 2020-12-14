@@ -1,0 +1,84 @@
+user:
+
+username: u.email
+email: u.email
+password: generate
+
+
+employer:
+
+user_id: user.id
+first_name: u.contacts[0].firstname или null
+second_name: u.contacts[0].lastname или null
+birth_date: null
+status: 1 (выставится по дефолту)
+created_at: time()
+updated_at: time()
+owner: user.id
+audit_count: 0 (выставится по дефолту)
+
+
+company:
+
+user_id: user.id
+name: u.title
+image_url: u.logo.url
+website: u.external_url
+activity_field: u.rubrics.title(сконкатенировать всё)
+vk: null
+facebook: null
+instagram: null
+skype: null
+description: u.description
+contact_person: или скопировать из Employer(first_name, second_name) или продублировать название компании или придумать что-то ещё
+status: 1 (выставится по дефолту)
+created_at: time()
+updated_at: time()
+owner: user.id
+is_trusted: 0 (выставится по дефолту)
+valance: 0 (выставится по дефолту)
+vacancy_renew_count: 1 (выставится по дефолту)
+create_vacancy: 3 (выставится по дефолту или подумать сколько можно будет создавать вакансий)
+
+
+phone:
+
+company_id: company.id
+employer_id: null
+number: u.contacts[0].phones[0].number (Нужно правильно отформатировать)
+$phone->number = '+' . substr($phone->number, 0, 1).' '.
+                    substr($phone->number, 1, 3).' '.
+                    substr($phone->number, 4, 3).'-'.
+                    substr($phone->number, 7, 2).'-'.
+                    substr($phone->number, 9);
+owner: user.id
+
+
+vacancy:
+
+post: v.header
+responsibilities: null
+min_salary: v.salary_min
+max_salary: v.salary_max
+qualification_requirements: null
+work_experience: v.exeperience_length (нужно посмотреть какие там варианты, наши:0='Без опыта работы', 1='От 1 года', 2='От 3 лет', 3='От 5 лет')
+education: ??
+working_conditions: v.benefits.title(сконкатенировать)
+video: null
+city_id: v.contact.city[0].title(Нужно искать соответствия с имеющимися городами)
+employment_type_id: v.working_type(Нужно искать соответствия)
+hot: 0 (выставится по дефолту)
+notification_status: 0 (выставится по дефолту)
+status: 1 (выставится по дефолту)
+created_at: time()
+updated_at: time()
+owner: user.id
+update_time: time()
+description: v.description
+publisher_id: user.id
+get_update_id: 1
+views: 0 (выставится по дефолту)
+phone: v.contact.phones[0].number(отформатировать)
+active_until: До какого времени активна (timestamp)
+day_vacancy_until: 0 (выставится по дефолту)
+main_category_id: что делать с категориями не знаю, как-то искать соответствия

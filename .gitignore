@@ -1,0 +1,6 @@
+.idea
+bin
+lib
+lib64
+venv
+share
