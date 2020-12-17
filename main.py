@@ -86,10 +86,16 @@ if __name__ == '__main__':
         execution = parser(args)
         print(execution)
     elif args.geo_id or args.rubric_id:
-        print(f'Parsing with geo={args.geo_id}, rubric={args.rubric_id}...\n')
-        execution = parser(args)
-        print(execution)        
+        print("You'r trying run parser with one argument")
+        confim = input('Are you sure? (y/anything):')
+        if confim == 'y':
+            print(f'Parsing with geo={args.geo_id}, rubric={args.rubric_id}...\n')            
+            execution = parser(args)
+            print(execution)
+        else:
+            print('Exit')        
     else:
+        print("You'r trying run parser without arguments")
         confim = input('Are you sure? (y/anything):')
         if confim == 'y':
             print(f'Parsing with geo={args.geo_id}, rubric={args.rubric_id}...\n')            
