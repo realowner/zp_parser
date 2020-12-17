@@ -1,6 +1,7 @@
 from .BaseModel import *
 from .UserModel import *
 from .CompanyModel import *
+from .EmployerModel import *
 from include.helpers.PhoneFormat import PhoneFormat
 
 
@@ -12,10 +13,11 @@ class PhoneModel(BaseModel):
     owner = IntegerField()
 
     @staticmethod
-    def create_phone(phone: str, user: UserModel, company: CompanyModel):
+    def create_phone(phone: str, user: UserModel, company: CompanyModel, employer: EmployerModel):
         phone_format = PhoneFormat(phone=phone, tpl='+$ $$$ $$$-$$-$$')
         row = PhoneModel(
             company_id=company.id,
+            employer_id=employer.id,
             number=phone_format.phone,
             owner=user.id
         )
@@ -25,5 +27,5 @@ class PhoneModel(BaseModel):
         return row
 
     class Meta:
-        db_table = "phone"
+        db_table = "phones"
         order_by = ('id',)

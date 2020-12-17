@@ -19,24 +19,24 @@ class UserModel(BaseModel):
         :param user_dto: UserDTO
         :return: UserModel
         """
-        exists = UserModel.get_or_none(UserModel.email == user_dto.email)
+        # exists = UserModel.get_or_none(UserModel.email == user_dto.email)
 
-        if not bool(exists):
-            row = UserModel(
-                email=user_dto.email,
-                username=user_dto.username,
-                password_hash=user_dto.password_hash,
-                auth_key=user_dto.auth_key,
-                confirmed_at=user_dto.confirmed_at,
-                created_at=user_dto.created_at,
-                updated_at=user_dto.updated_at,
-            )
-            row.save()
+        # if not bool(exists):
+        row = UserModel(
+            email=user_dto.email,
+            username=user_dto.username,
+            password_hash=user_dto.password_hash,
+            auth_key=user_dto.auth_key,
+            confirmed_at=user_dto.confirmed_at,
+            created_at=user_dto.created_at,
+            updated_at=user_dto.updated_at,
+        )
+        row.save()
 
-            return row
+        return row
 
-        return exists
+        # return exists
 
     class Meta:
-        db_table = "user"
+        db_table = "users"
         order_by = ('created_at',)

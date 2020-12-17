@@ -16,23 +16,23 @@ class EmployerModel(BaseModel):
 
     @staticmethod
     def create_employer(user_model: UserModel, user_dto: UserDTO):
-        exists = EmployerModel.get_or_none(EmployerModel.user_id == user_model.id)
+        # exists = EmployerModel.get_or_none(EmployerModel.user_id == user_model.id)
 
-        if not bool(exists):
-            row = EmployerModel(
-                user_id=user_model.id,
-                first_name=user_dto.firstname,
-                second_name=user_dto.lastname,
-                created_at=user_dto.created_at,
-                updated_at=user_dto.updated_at,
-                owner=user_model.id,
-            )
-            row.save()
+        # if not bool(exists):
+        row = EmployerModel(
+            user_id=user_model.id,
+            first_name=user_dto.firstname,
+            second_name=user_dto.lastname,
+            created_at=user_dto.created_at,
+            updated_at=user_dto.updated_at,
+            owner=user_model.id,
+        )
+        row.save()
 
-            return row
+        return row
 
-        return exists
+        # return exists
 
     class Meta:
-        db_table = "employer"
+        db_table = "employers"
         order_by = ('created_at',)

@@ -7,14 +7,18 @@ class VacancyDTO:
         dt: int = int(round(time.time()))
 
         #test only
-        self.avac_id = vacancy['id']
+        self.vac_id = vacancy['id']
 
         self.post = vacancy.get('header', 'Title')
         self.responsibilities = None
         self.min_salary = vacancy.get('salary_min', 0)
         self.max_salary = vacancy.get('salary_max', 0)
         self.qualification_requirements = None
-        self.work_experence = vacancy['experience_length']
+        
+        try:
+            self.work_experence = vacancy['experience_length']['title']
+        except:
+            self.work_experence = None
         
         try:
             self.education = vacancy['education']['title']

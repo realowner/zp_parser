@@ -16,37 +16,39 @@ class CompanyModel(BaseModel):
     created_at = IntegerField()
     updated_at = IntegerField()
     owner = IntegerField()
+    company_id = IntegerField()
 
     @staticmethod
     def create_company(user_model: UserModel, user_dto: UserDTO):
-        exists = CompanyModel.get_or_none(CompanyModel.user_id == user_model.id)
+        # exists = CompanyModel.get_or_none(CompanyModel.user_id == user_model.id)
 
-        if not bool(exists):
-            row = CompanyModel(
-                user_id=user_model.id,
-                name=user_dto.title,
-                image_url=user_dto.logo,
-                website=user_dto.website,
-                activity_field=user_dto.activity_field,
-                description=user_dto.description,
-                created_at=user_dto.created_at,
-                updated_at=user_dto.updated_at,
-                owner=user_model.id,
-            )
+        # if not bool(exists):
+        row = CompanyModel(
+            user_id = user_model.id,
+            name = user_dto.title,
+            image_url = user_dto.logo,
+            website = user_dto.website,
+            activity_field = user_dto.activity_field,
+            description = user_dto.description,
+            created_at = user_dto.created_at,
+            updated_at = user_dto.updated_at,
+            owner = user_model.id,
+            company_id = user_dto.user_id
+        )
 
-            buffer = []
-            if user_dto.firstname:
-                buffer.append(user_dto.firstname)
-            if user_dto.lastname:
-                buffer.append(user_dto.lastname)
-            row.contact_person = ' '.join(buffer)
+        buffer = []
+        if user_dto.firstname:
+            buffer.append(user_dto.firstname)
+        if user_dto.lastname:
+            buffer.append(user_dto.lastname)
+        row.contact_person = ' '.join(buffer)
 
-            row.save()
+        row.save()
 
-            return row
+        return row
 
-        return exists
+        # return exists
 
     class Meta:
-        db_table = "company"
+        db_table = "companies"
         order_by = ('created_at',)

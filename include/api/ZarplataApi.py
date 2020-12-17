@@ -15,20 +15,6 @@ class ZpApi:
             # value - proxy' cookies
         }
 
-    # def do_request(self, obj_type, obj_id=None, additional_params=None):
-    #     url = f'https://{self.base_region_url}.zarplata.ru/api/v1/{obj_type}'
-    #     if obj_id:
-    #         url = f'{url}/{obj_id}'
-
-    #     if additional_params:
-    #         url = f'{url}/?{additional_params}'
-
-    #     response = requests.get(url)
-    #     if response.status_code == 200:
-    #         return json.loads(response.text)
-
-    #     return None
-
     def do_request(self, url):
 
         response = requests.get(url)
@@ -45,8 +31,20 @@ class ZpApi:
         return self.do_request(url=url)
 
 
-    def do_rubric_request(self):
+    def do_rubric_request(self, certain_id=None):
         url = 'https://zarplata.ru/api/v1/rubrics'
+
+        if certain_id:
+            url = f'https://zarplata.ru/api/v1/rubrics/{certain_id}'
+
+        return self.do_request(url)
+
+    def do_geo_request(self, limit, offset, certain_id=None):
+        url = f'https://zarplata.ru/api/v1/geo?limit={limit}&offset={offset}'
+
+        if certain_id:
+            url = f'https://zarplata.ru/api/v1/geo/{certain_id}'
+
         return self.do_request(url)
 
 
