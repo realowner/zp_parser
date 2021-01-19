@@ -10,8 +10,17 @@ class UserModel(BaseModel):
     password_hash = CharField(max_length=60)
     auth_key = CharField(max_length=32)
     confirmed_at = IntegerField()
+
+    unconfirmed_email = CharField(max_length=255)
+    blocked_at = IntegerField
+    registration_ip = IntegerField
+    
     created_at = IntegerField()
     updated_at = IntegerField()
+
+    flags = IntegerField(default=0)
+    last_login_at = IntegerField
+    status = IntegerField
 
     @staticmethod
     def crate_user(user_dto: UserDTO):
@@ -28,8 +37,13 @@ class UserModel(BaseModel):
             password_hash=user_dto.password_hash,
             auth_key=user_dto.auth_key,
             confirmed_at=user_dto.confirmed_at,
+            # unconfirmed_email ???
+            # blocked_at ???
+            # registration_ip ???
             created_at=user_dto.created_at,
             updated_at=user_dto.updated_at,
+            # last_login_at ???
+            # status ???
         )
         row.save()
 
@@ -38,5 +52,5 @@ class UserModel(BaseModel):
         # return exists
 
     class Meta:
-        db_table = "users"
+        db_table = "user"
         order_by = ('created_at',)

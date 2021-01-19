@@ -1,4 +1,5 @@
 import time
+from include.helpers.EmploymentType import EmploymentType as et
 
 
 class VacancyDTO:
@@ -31,10 +32,11 @@ class VacancyDTO:
                 self.work_conditions = self.work_conditions + benefit['title'] + '; '
 
         self.video = None
-        self.city_id = vacancy['contact']['city']['title']
+        self.city_id = vacancy['contact']['city']['id']
         
         try:
-            self.employment_type_id = vacancy['working_type']['title']
+            self.employment_type_id = et.conformity(received_id=vacancy['working_type']['id'])
+            # self.employment_type_id = vacancy['working_type']['id']
         except:
             self.employment_type_id = None
 

@@ -27,5 +27,5 @@ class PhoneModel(BaseModel):
         return row
 
     class Meta:
-        db_table = "phones"
+        db_table = "phone"
         order_by = ('id',)

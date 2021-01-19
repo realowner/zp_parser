@@ -5,3 +5,5 @@ from .EmployerModel import *
 from .CompanyModel import *
 from .PhoneModel import *
 from .VacancyModel import *
+from .IdCompanyRelationModel import *
+from .IdVacancyRelationModel import *

@@ -8,6 +8,9 @@ class EmployerModel(BaseModel):
     user_id = IntegerField()
     first_name = CharField(max_length=255)
     second_name = CharField(max_length=255)
+
+    birth_date = DateField
+
     status = IntegerField(default=1)
     created_at = IntegerField()
     updated_at = IntegerField()
@@ -23,6 +26,7 @@ class EmployerModel(BaseModel):
             user_id=user_model.id,
             first_name=user_dto.firstname,
             second_name=user_dto.lastname,
+            # birth_date ???
             created_at=user_dto.created_at,
             updated_at=user_dto.updated_at,
             owner=user_model.id,
@@ -34,5 +38,5 @@ class EmployerModel(BaseModel):
         # return exists
 
     class Meta:
-        db_table = "employers"
+        db_table = "employer"
         order_by = ('created_at',)

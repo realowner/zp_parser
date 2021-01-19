@@ -15,6 +15,27 @@ class ZpApi:
             # value - proxy' cookies
         }
 
+####################################################################
+    #     self.proxies = []
+    #     self.proxies_fail_counter = {}
+    #     self.load_proxies()
+
+    # def load_proxies(self):
+    #     # TODO: переделать на загрузку с урла
+    #     self.proxies = set(open('test.txt').read().split('\n'))
+    #     self.proxies_fail_counter = {proxy: 0 for proxy in self.proxies}
+    #     self.cycle_proxies = cycle(self.proxies)
+
+    # def get_proxy(self):
+    #     if len(self.proxies) == 0:
+    #         self.load_proxies()
+    #     return next(self.cycle_proxies)
+
+    # def delete_proxy(self, proxy_url):
+    #     self.proxies.remove(proxy_url)
+    #     self.cycle_proxies = cycle(self.proxies)
+####################################################################
+
     def do_request(self, url):
 
         response = requests.get(url)

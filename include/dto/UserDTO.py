@@ -5,6 +5,7 @@ import time
 class UserDTO:
     def __init__(self, user):
         dt: int = int(round(time.time()))
+        self.comp_id = user['id']
         self.email = user['email']
         self.title = user['title']
         self.website = user['external_url']
@@ -40,6 +41,7 @@ class UserDTO:
         self.user_id = user['id']
         self.vk = None
         self.facebook = None
+        self.instagram = None
         self.skype = None
         self.status = None
         self.is_trusted = None

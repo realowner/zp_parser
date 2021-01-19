@@ -10,8 +10,8 @@ class DbConnection:
 
     def __init__(self):
         self.user = 'root'
-        self.password = 'root'
-        self.db_name = 'zpdb'
+        self.password = 'password'
+        self.db_name = 'work'
         self.host = 'localhost'
 
         self.db_handle = MySQLDatabase(

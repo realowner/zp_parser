@@ -5,8 +5,8 @@ from include.ArgsParse import ArgsParser
 from include.api.ZarplataApi import ZpApi
 from include.helpers.PhoneFormat import PhoneFormat
 from include.helpers.PasswordGen import PasswordGen
-import requests
 from include.db import *
+import requests
 import json
 
 
@@ -16,26 +16,40 @@ def parser(args):
     skiped_vac_count = 0
     commited_vac = 0
  
+    # try:
+    #     company_id_list = [comp.company_id for comp in CompanyModel.select(CompanyModel.company_id)]
+    # except:
+    #     print('Error occured when getting companies, falling back on empty list')
+    #     company_id_list = []
+
+    # try:
+    #     vacancy_id_list = [vac.vacancy_id for vac in VacancyModel.select(VacancyModel.vacancy_id)]
+    # except:
+    #     print('Error occured when getting vacancies, falling back on empty list')
+    #     company_id_list = []
+
     try:
-        company_id_list = [comp.company_id for comp in CompanyModel.select(CompanyModel.company_id)]
+        company_id_list = [comp.company_id for comp in IdCompanyRelationModel.select(IdCompanyRelationModel.id_api_company)]
     except:
         print('Error occured when getting companies, falling back on empty list')
         company_id_list = []
-
     try:
-        vacancy_id_list = [vac.vacancy_id for vac in VacancyModel.select(VacancyModel.vacancy_id)]
+        vacancy_id_list = [vac.vacancy_id for vac in IdVacancyRelationModel.select(IdVacancyRelationModel.id_api_vacancy)]
     except:
         print('Error occured when getting vacancies, falling back on empty list')
         company_id_list = []
 
     result = ''
     try:
-        geo_count = api.do_geo_request(limit=0, offset=0, certain_id=args.geo_id)['metadata']['resultset']['count']
+        geo_count = api.do_geo_request(limit=0, offset=0, certain_id=61)['metadata']['resultset']['count']
+        # geo_count = api.do_geo_request(limit=0, offset=0, certain_id=args.geo_id)['metadata']['resultset']['count']
         for counter in range(0, geo_count, 100):
-            geo_res = api.do_geo_request(limit=100, offset=counter, certain_id=args.geo_id)
+            geo_res = api.do_geo_request(limit=100, offset=counter, certain_id=61)
+            # geo_res = api.do_geo_request(limit=100, offset=counter, certain_id=args.geo_id)
             for geo_item in geo_res['geo']:
                 print(f"{geo_item['id']} - {geo_item['name']}")
-                rubric_res = api.do_rubric_request(certain_id=args.rubric_id)['rubrics']
+                rubric_res = api.do_rubric_request(certain_id=2)['rubrics']
+                # rubric_res = api.do_rubric_request(certain_id=args.rubric_id)['rubrics']
                 for rubric in rubric_res:
                     print(f"{rubric['id']} - {rubric['title']}")                    
                     vacancy_count = api.do_vacancy_request(geo_id=geo_item['id'], rubric_id=rubric['id'], limit=0, offset=0)['metadata']['resultset']['count']
@@ -76,30 +90,33 @@ def parser(args):
 
     return result
 
+args = [61, 2]
+api = ZpApi()
+parser(args)
 
-if __name__ == '__main__':
-    args = ArgsParser.parse()
-    api = ZpApi()
+# if __name__ == '__main__':
+#     args = ArgsParser.parse()
+#     api = ZpApi()
 
-    if args.geo_id and args.rubric_id:
-        print(f'Parsing with GEO={args.geo_id}, RUBRIC={args.rubric_id}...\n')
-        execution = parser(args)
-        print(execution)
-    elif args.geo_id or args.rubric_id:
-        print("You'r trying run parser with one argument")
-        confim = input('Are you sure? (y/anything):')
-        if confim == 'y':
-            print(f'Parsing with geo={args.geo_id}, rubric={args.rubric_id}...\n')            
-            execution = parser(args)
-            print(execution)
-        else:
-            print('Exit')        
-    else:
-        print("You'r trying run parser without arguments")
-        confim = input('Are you sure? (y/anything):')
-        if confim == 'y':
-            print(f'Parsing with geo={args.geo_id}, rubric={args.rubric_id}...\n')            
-            execution = parser(args)
-            print(execution)
-        else:
-            print('Exit')
+#     if args.geo_id and args.rubric_id:
+#         print(f'Parsing with GEO={args.geo_id}, RUBRIC={args.rubric_id}...\n')
+#         execution = parser(args)
+#         print(execution)
+#     elif args.geo_id or args.rubric_id:
+#         print("You'r trying run parser with one argument")
+#         confim = input('Are you sure? (y/anything):')
+#         if confim == 'y':
+#             print(f'Parsing with geo={args.geo_id}, rubric={args.rubric_id}...\n')            
+#             execution = parser(args)
+#             print(execution)
+#         else:
+#             print('Exit')        
+#     else:
+#         print("You'r trying run parser without arguments")
+#         confim = input('Are you sure? (y/anything):')
+#         if confim == 'y':
+#             print(f'Parsing with geo={args.geo_id}, rubric={args.rubric_id}...\n')            
+#             execution = parser(args)
+#             print(execution)
+#         else:
+#             print('Exit')
