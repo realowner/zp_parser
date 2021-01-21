@@ -8,9 +8,7 @@ class EmployerModel(BaseModel):
     user_id = IntegerField()
     first_name = CharField(max_length=255)
     second_name = CharField(max_length=255)
-
-    birth_date = DateField
-
+    birth_date = DateField()
     status = IntegerField(default=1)
     created_at = IntegerField()
     updated_at = IntegerField()

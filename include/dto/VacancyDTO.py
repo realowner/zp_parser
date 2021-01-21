@@ -1,5 +1,5 @@
 import time
-from include.helpers.EmploymentType import EmploymentType as et
+from include.helpers.Conformity import Conformity as conf
 
 
 class VacancyDTO:
@@ -7,7 +7,7 @@ class VacancyDTO:
     def __init__(self, vacancy):
         dt: int = int(round(time.time()))
 
-        #test only
+        # vacancy id for list only
         self.vac_id = vacancy['id']
 
         self.post = vacancy.get('header', 'Title')
@@ -17,26 +17,30 @@ class VacancyDTO:
         self.qualification_requirements = None
         
         try:
-            self.work_experence = vacancy['experience_length']['title']
+            self.work_experience = conf.work_experience(self, received_id=vacancy['experience_length']['id'])
         except:
-            self.work_experence = None
+            self.work_experience = None
         
         try:
             self.education = vacancy['education']['title']
         except:
             self.education = None
 
-        self.work_conditions = ''
+        self.working_conditions = ''
         if any([item for item in vacancy.get('benefits', [])]):
             for benefit in vacancy['benefits']:
-                self.work_conditions = self.work_conditions + benefit['title'] + '; '
+                self.working_conditions = self.working_conditions + benefit['title'] + '; '
 
         self.video = None
         self.city_id = vacancy['contact']['city']['id']
+        self.address = vacancy['contact']['address']
+        self.home_number = vacancy['contact']['building']
         
         try:
-            self.employment_type_id = et.conformity(received_id=vacancy['working_type']['id'])
-            # self.employment_type_id = vacancy['working_type']['id']
+            if vacancy['schedule'] and vacancy['schedule']['id'] == 306:
+                self.employment_type_id = 1
+            else:
+                self.employment_type_id = conf.employment_type(self, received_id=vacancy['working_type']['id'])
         except:
             self.employment_type_id = None
 
@@ -46,15 +50,11 @@ class VacancyDTO:
         self.created_at = dt
         self.updated_at = dt
         
-        # conmpany_id for FK
-        self.owner = vacancy['publication']['company_id']
+        # company id for list only
+        self.company_id = vacancy['publication']['company_id']
 
         self.update_time = dt
-        self.description = vacancy['description']
-        
-        # conmpany_id for FK
-        self.publisher_id = vacancy['publication']['company_id']
-        
+        self.description = vacancy['description']        
         self.get_update_id = None
         self.views = None
         self.phone = vacancy['contact']['phones']

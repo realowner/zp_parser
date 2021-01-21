@@ -1,28 +1,27 @@
 from peewee import *
 from .BaseModel import *
 from .CompanyModel import *
+from .UserModel import *
+from .IdCategoryRelationModel import *
+from .IdGeoRelationModel import *
 from include.dto.VacancyDTO import VacancyDTO
 
 
 class VacancyModel(BaseModel):
     id = PrimaryKeyField(null=False)
-
-    company_id = IntegerField
-
+    company_id = IntegerField()
     post = CharField(max_length=255)
-    responsibilities = TextField
+    responsibilities = TextField()
     min_salary = IntegerField()
     max_salary = IntegerField()
-    qualification_requirements = TextField
-    work_experence = CharField(max_length=255)
+    qualification_requirements = TextField()
+    work_experience = CharField(max_length=255)
     education = CharField(max_length=255)
-    work_conditions = TextField
+    working_conditions = TextField()
     video = CharField(max_length=255)
     city_id = IntegerField()
-
     address = CharField(max_length=255)
     home_number = CharField(max_length=255)
-
     employment_type_id = IntegerField()
     hot = IntegerField(default=0)
     notification_status = IntegerField(default=0)
@@ -30,12 +29,10 @@ class VacancyModel(BaseModel):
     created_at = IntegerField()
     updated_at = IntegerField()
     owner = IntegerField()
-    updated_time = IntegerField()
-    description = TextField
-
+    update_time = IntegerField()
+    description = TextField()
     main_category_id = IntegerField(default=34)
-
-    publisher_id = IntegerField
+    publisher_id = IntegerField()
     get_update_id = IntegerField(default=0)
     views = IntegerField(default=0)
     phone = CharField(max_length=255)
@@ -46,7 +43,7 @@ class VacancyModel(BaseModel):
 
 
     @staticmethod
-    def create_vacancy(vacancy_dto: VacancyDTO, company: CompanyModel):
+    def create_vacancy(vacancy_dto: VacancyDTO, company: CompanyModel, user: UserModel, category: IdCategoryRelationModel, geo: IdGeoRelationModel):
         """
         :param user_dto: UserDTO
         :return: UserModel
@@ -62,24 +59,23 @@ class VacancyModel(BaseModel):
             min_salary = vacancy_dto.min_salary,
             max_salary = vacancy_dto.max_salary,
             qualification_requirements = vacancy_dto.qualification_requirements,
-            work_experence = vacancy_dto.work_experence,
+            work_experience = vacancy_dto.work_experience,
             education = vacancy_dto.education,
-            work_conditions = vacancy_dto.work_conditions,
+            working_conditions = vacancy_dto.working_conditions,
             video = vacancy_dto.video,
-            city_id = vacancy_dto.city_id,
-            # address ???
-            # home_number ???
-            employment_type_id = vacancy_dto.employment_type,
+            city_id = geo.id,
+            address = vacancy_dto.address,
+            home_number = vacancy_dto.home_number,
+            employment_type_id = vacancy_dto.employment_type_id,
             created_at = vacancy_dto.created_at,
             updated_at = vacancy_dto.updated_at,
-            owner = vacancy_dto.owner,
-            updated_time = vacancy_dto.update_time,
+            owner = user.id,
+            update_time = vacancy_dto.update_time,
             description = vacancy_dto.description,
-            # main_category_id ???
-            publisher_id = vacancy_dto.publisher_id,
+            main_category_id = category.id,
+            publisher_id = user.id,
             phone = vacancy_dto.phone,
             active_until = vacancy_dto.active_until,
-            # main_categories = vacancy_dto.main_categories,
         )
         row.save()
 

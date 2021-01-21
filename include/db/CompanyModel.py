@@ -1,5 +1,6 @@
 from .BaseModel import *
 from .UserModel import *
+from .EmployerModel import *
 from include.dto.UserDTO import UserDTO
 
 
@@ -9,34 +10,29 @@ class CompanyModel(BaseModel):
     name = CharField(max_length=255)
     image_url = CharField(max_length=255)
     website = CharField(max_length=255)
-    activity_field = TextField
-
+    activity_field = TextField()
     vk = CharField(max_length=255)
     facebook = CharField(max_length=255)
     instagram = CharField(max_length=255)
     skype = CharField(max_length=255)
-
-    description = TextField
+    description = TextField()
     contact_person = CharField(max_length=255)
     status = IntegerField(default=1)
     created_at = IntegerField()
     updated_at = IntegerField()
     owner = IntegerField()
-
     is_trusted = IntegerField(default=0)
     balance = DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    vacancy_remew_cc = IntegerField(default=1)
+    vacancy_renew_count = IntegerField(default=1)
     create_vacancy = IntegerField(default=3)
 
-    # company_id = IntegerField()
-
     @staticmethod
-    def create_company(user_model: UserModel, user_dto: UserDTO):
+    def create_company(user: UserModel, user_dto: UserDTO, employer: EmployerModel):
         # exists = CompanyModel.get_or_none(CompanyModel.user_id == user_model.id)
 
         # if not bool(exists):
         row = CompanyModel(
-            user_id = user_model.id,
+            user_id = user.id,
             name = user_dto.title,
             image_url = user_dto.logo,
             website = user_dto.website,
@@ -46,11 +42,10 @@ class CompanyModel(BaseModel):
             instagram = user_dto.instagram,
             skype = user_dto.skype,
             description = user_dto.description,
-            # contact_person ???
+            
             created_at = user_dto.created_at,
             updated_at = user_dto.updated_at,
-            owner = user_model.id,
-            # company_id = user_dto.user_id
+            owner = user.id,
         )
 
         buffer = []

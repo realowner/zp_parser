@@ -36,7 +36,7 @@ created_at: time()
 updated_at: time()
 owner: user.id
 is_trusted: 0 (выставится по дефолту)
-valance: 0 (выставится по дефолту)
+valance: 0 (выставится по д            # self.employment_type_id = vacancy['working_type']['id']ефолту)
 vacancy_renew_count: 1 (выставится по дефолту)
 create_vacancy: 3 (выставится по дефолту или подумать сколько можно будет создавать вакансий)
 

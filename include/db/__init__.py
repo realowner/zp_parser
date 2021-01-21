@@ -7,3 +7,7 @@ from .PhoneModel import *
 from .VacancyModel import *
 from .IdCompanyRelationModel import *
 from .IdVacancyRelationModel import *
+from .GeobaseModel import *
+from .CategoryModel import *
+from .IdGeoRelationModel import *
+from .IdCategoryRelationModel import *

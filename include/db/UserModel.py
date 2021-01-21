@@ -5,22 +5,19 @@ from include.dto.UserDTO import UserDTO
 
 class UserModel(BaseModel):
     id = PrimaryKeyField(null=False)
-    email = CharField(max_length=255)
-    username = CharField(max_length=255)
-    password_hash = CharField(max_length=60)
-    auth_key = CharField(max_length=32)
+    email = CharField(null=False, max_length=255)
+    username = CharField(null=False, max_length=255)
+    password_hash = CharField(null=False, max_length=60)
+    auth_key = CharField(null=False, max_length=32)
     confirmed_at = IntegerField()
-
     unconfirmed_email = CharField(max_length=255)
-    blocked_at = IntegerField
-    registration_ip = IntegerField
-    
+    blocked_at = IntegerField()
+    registration_ip = IntegerField()
     created_at = IntegerField()
     updated_at = IntegerField()
-
     flags = IntegerField(default=0)
-    last_login_at = IntegerField
-    status = IntegerField
+    last_login_at = IntegerField()
+    status = IntegerField()
 
     @staticmethod
     def crate_user(user_dto: UserDTO):
