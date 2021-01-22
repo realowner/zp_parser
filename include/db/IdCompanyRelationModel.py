@@ -4,15 +4,15 @@ from include.dto.UserDTO import UserDTO
 
 
 class IdCompanyRelationModel(BaseModel):
-    id = PrimaryKeyField(null=False)
-    id_company = IntegerField()
+    id_rel = PrimaryKeyField(null=False)
+    id = ForeignKeyField(CompanyModel, field='id')
     id_api_company = IntegerField()
 
     @staticmethod
     def create_comp_relation(user_dto: UserDTO, company: CompanyModel):
         
         row = IdCompanyRelationModel(
-            id_company = company.id,
+            id = company.id,
             id_api_company = user_dto.comp_id,
         )
         row.save()
@@ -21,4 +21,4 @@ class IdCompanyRelationModel(BaseModel):
 
     class Meta():
         db_table = "id_company_relation"
-        order_by = ('id',)
+        order_by = ('id_rel',)
