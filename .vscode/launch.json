@@ -5,13 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: main.py -g 924 -r 268",
+            "name": "Python: main.py with args",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
             "args": [
-                "-g", "924", "-r", "7478"
+                "-g", "915", "-r", "432"
             ]
         }
     ]

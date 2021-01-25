@@ -8,6 +8,7 @@ from include.api.ZarplataApi import ZpApi
 from include.helpers.PhoneFormat import PhoneFormat
 from include.helpers.PasswordGen import PasswordGen
 from include.db import *
+import time
 import requests
 import json
 
@@ -32,18 +33,12 @@ def parser(args):
 
     result = ''
     # try:
-    # geo_count = api.do_geo_request(limit=0, offset=0, certain_id=61)['metadata']['resultset']['count']
     geo_count = api.do_geo_request(limit=0, offset=0, certain_id=args.geo_id)['metadata']['resultset']['count']
-
     for counter in range(0, geo_count, 100):
-
-        # geo_res = api.do_geo_request(limit=100, offset=counter, certain_id=61)
         geo_res = api.do_geo_request(limit=100, offset=counter, certain_id=args.geo_id)
-
         for geo_item in geo_res['geo']:
             print("\n------------------------------------------------------")            
             print(f"    {geo_item['id']} - {geo_item['name']}")
-
             geo_db_matches = IdGeoRelationModel.get_or_none(IdGeoRelationModel.id_api_geo == geo_item['id'])
             if geo_db_matches == None:
                 print(point + 'no matches found in the database')
@@ -56,13 +51,9 @@ def parser(args):
                 geo_rel_insert = IdGeoRelationModel.get(IdGeoRelationModel.id_api_geo == geo_item['id'])
                 print(point + 'matches found in the database')
                 print(point + f'    {geo_db_matches.name}')
-
-            # rubric_res = api.do_rubric_request(certain_id=7478)['rubrics']
             rubric_res = api.do_rubric_request(certain_id=args.rubric_id)['rubrics']
-
             for rubric in rubric_res:
                 print(f"\n    {rubric['id']} - {rubric['title']}")
-
                 category_db_matches = IdCategoryRelationModel.get_or_none(IdCategoryRelationModel.id_api_category == rubric['id'])
                 if category_db_matches == None:
                     print(point + 'no matches found in the database')
@@ -75,73 +66,82 @@ def parser(args):
                     category_rel_insert = IdCategoryRelationModel.get(IdCategoryRelationModel.id_api_category == rubric['id'])
                     print(point + 'matches found in the database')
                     print(point + f'    {category_db_matches.name}')
-                    
+                     
                 print("------------------------------------------------------")                    
                 vacancy_count = api.do_vacancy_request(geo_id=geo_item['id'], rubric_id=rubric['id'], limit=0, offset=0)['metadata']['resultset']['count']
                 current_company_list = []
                 for counter in range(0, vacancy_count, 100):
                     vacancy_res = api.do_vacancy_request(geo_id=geo_item['id'], rubric_id=rubric['id'], limit=100, offset=counter)
-
                     with db_handle.atomic():
                         for vacancy in vacancy_res['vacancies']:
                             vacancy_dto = VacancyDTO(vacancy)
-                            owner_email = api.do_company_request(company_id=vacancy_dto.company_id)['companies'][0]['email']
-                            print(f'\nvacancy {vacancy_dto.vac_id} company {vacancy_dto.company_id}:')
+
+                            try:
+                                owner_email = api.do_company_request(company_id=vacancy_dto.company_id)['companies'][0]['email']
+                            except:
+                                owner_email = None
+                            print(f'\nvacancy {vacancy_dto.vac_id} company {vacancy_dto.company_id}({owner_email}):')
                             if owner_email == None or owner_email == '':
                                 print(point + f'owners info {vacancy_dto.company_id}: email does not exist SKIPPED')
                                 skiped_vac_count += 1
-                                skiped_comp_count += 1 
+                                skiped_comp_count += 1
                             else:
                                 print(point + f'owners info {vacancy_dto.company_id}: email exist')
                                 if vacancy_dto.company_id not in current_company_list:
-                                        
+                                          
                                     if vacancy_dto.company_id in company_id_list:
-                                        # exist = True
                                         skiped_comp_count += 1
-                                        # company_insert = IdCategoryRelationModel(IdCategoryRelationModel.id_api_category == vacancy_dto.company_id)
                                         company_insert = CompanyModel.select().join(IdCompanyRelationModel).where(
-                                            IdCompanyRelationModel.id_api_company == vacancy_dto.company_id)
+                                                IdCompanyRelationModel.id_api_company == vacancy_dto.company_id).get()
                                         mail = api.do_company_request(company_id=vacancy_dto.company_id)
                                         user_insert = UserModel.get(UserModel.email == mail['companies'][0]['email'])
                                         print(point + f'owners info {vacancy_dto.company_id}: already exist SKIPPED')
                                     else:
-                                        # exist = False                                            
-                                        company_res = api.do_company_request(company_id=vacancy_dto.company_id)
-                                        user_dto = UserDTO(company_res['companies'][0])
-                                        current_company_list.append(vacancy_dto.company_id)
-                                        user_insert = UserModel.crate_user(user_dto)
-                                        print(point + 'user insert: done')
-                                        employer_insert = EmployerModel.create_employer(user_insert, user_dto)
-                                        print(point + 'employer insert: done')
-                                        company_insert = CompanyModel.create_company(user_insert, user_dto, employer_insert)
-                                        print(point + 'company insert: done')
-                                        comp_rel_insert = IdCompanyRelationModel.create_comp_relation(user_dto, company_insert)
-                                        print(point + 'company relation insert: done')
-                                        phone_insert = PhoneModel.create_phone(user_dto.phone, user_insert, company_insert, employer_insert)
-                                        print(point + 'phone insert: done')
-                                        commited_comp += 1
-                                        print(point + f'owners info {vacancy_dto.company_id}: COMMITED')
-                                        
+                                        user_matches = UserModel.get_or_none(UserModel.email == owner_email)
+                                        if user_matches == None:                                          
+                                            company_res = api.do_company_request(company_id=vacancy_dto.company_id)
+                                            user_dto = UserDTO(company_res['companies'][0])
+                                            current_company_list.append(vacancy_dto.company_id)
+                                            user_insert = UserModel.crate_user(user_dto)
+                                            print(point + 'user insert: done')
+                                            employer_insert = EmployerModel.create_employer(user_insert, user_dto)
+                                            print(point + 'employer insert: done')
+                                            company_insert = CompanyModel.create_company(user_insert, user_dto, employer_insert)
+                                            print(point + 'company insert: done')
+                                            comp_rel_insert = IdCompanyRelationModel.create_comp_relation(user_dto, company_insert)
+                                            print(point + 'company relation insert: done')
+                                            phone_insert = PhoneModel.create_phone(user_dto.phone, user_insert, company_insert, employer_insert)
+                                            print(point + 'phone insert: done')
+                                            commited_comp += 1
+                                            print(point + f'owners info {vacancy_dto.company_id}: SAVED')
+                                        else:
+                                            skiped_comp_count += 1
+                                            company_insert = CompanyModel.select().join(IdCompanyRelationModel).where(
+                                                    IdCompanyRelationModel.id_api_company == vacancy_dto.company_id)
+                                            mail = api.do_company_request(company_id=vacancy_dto.company_id)
+                                            user_insert = UserModel.get(UserModel.email == mail['companies'][0]['email'])
+                                            print(point + f'owners info {vacancy_dto.company_id}: already exist SKIPPED')
+                                            
                                 if vacancy_dto.vac_id in vacancy_id_list:
                                     skiped_vac_count += 1
                                     print(point + f'vacancy {vacancy_dto.vac_id}: already exist SKIPPED')
                                 else:
-                                    vacancy_insert = VacancyModel.create_vacancy(vacancy_dto, company_insert, user_insert, category_rel_insert, geo_rel_insert)
-                                    print(point + f'vacancy insert: done')
-                                    vac_rel_insert = IdVacancyRelationModel.create_vac_relation(vacancy_dto, vacancy_insert)
-                                    print(point + f'vacancy relation insert: done')
-                                    commited_vac += 1                                
-                                    print(point + f'vacancy {vacancy_dto.vac_id}: COMMITED')
+                                    try:
+                                        vacancy_insert = VacancyModel.create_vacancy(vacancy_dto, company_insert, user_insert, category_rel_insert, geo_rel_insert)
+                                        print(point + f'vacancy insert: done')
+                                        vac_rel_insert = IdVacancyRelationModel.create_vac_relation(vacancy_dto, vacancy_insert)
+                                        print(point + f'vacancy relation insert: done')
+                                        commited_vac += 1                                
+                                        print(point + f'vacancy {vacancy_dto.vac_id}: SAVED')
+                                    except:
+                                        skiped_vac_count += 1
+                                        print(point + f'vacancy {vacancy_dto.vac_id}: insert failed SKIPPED')
 
                         db_handle.commit()
 
-                            # print(f'\n{skiped_comp_count} owners info skiped')
-                            # print(f'{skiped_vac_count} vacancies skiped')
-                            # print(f'{commited_vac} vacancies, {commited_comp} owners info commited')
-
-        print(f'\n{skiped_comp_count} owners info skiped')
-        print(f'{skiped_vac_count} vacancies skiped')
-        print(f'{commited_vac} vacancies, {commited_comp} owners info commited')
+        print(f'\n{skiped_comp_count} owners info SKIPPED')
+        print(f'{skiped_vac_count} vacancies SKIPPED')
+        print(f'{commited_vac} vacancies, {commited_comp} owners info COMMITED')
 
         result = '\nCompleted successfully'
     # except:
@@ -161,8 +161,10 @@ if __name__ == '__main__':
         print(f'Parsing with GEO={args.geo_id}, RUBRIC={args.rubric_id}...')
         confim = input("Continue? (y/anything):")
         if confim == 'y':
+            start_time = time.time()
             execution = parser(args)
             print(execution)
+            print(f'Working time: {time.time() - start_time} seconds')
         else:
             print('Bye')
     elif args.geo_id or args.rubric_id:
@@ -170,17 +172,21 @@ if __name__ == '__main__':
         print("You'r trying run parser with one argument")
         confim = input('Are you sure? (y/anything):')
         if confim == 'y':
+            start_time = time.time()
             print(f'Parsing with geo={args.geo_id}, rubric={args.rubric_id}...\n')            
             execution = parser(args)
             print(execution)
+            print(f'Working time: {time.time() - start_time} seconds')
         else:
             print('Bye')        
     else:
         print("You'r trying run parser without arguments")
         confim = input('Are you sure? (y/anything):')
         if confim == 'y':
+            start_time = time.time()
             print(f'Parsing with geo={args.geo_id}, rubric={args.rubric_id}...\n')            
             execution = parser(args)
             print(execution)
+            print(f'Working time: {time.time() - start_time} seconds')
         else:
             print('Bye')

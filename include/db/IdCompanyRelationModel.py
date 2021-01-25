@@ -12,7 +12,7 @@ class IdCompanyRelationModel(BaseModel):
     def create_comp_relation(user_dto: UserDTO, company: CompanyModel):
         
         row = IdCompanyRelationModel(
-            id = company.id,
+            id_id = company.id,
             id_api_company = user_dto.comp_id,
         )
         row.save()
