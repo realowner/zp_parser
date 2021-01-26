@@ -18,9 +18,11 @@ class UserModel(BaseModel):
     flags = IntegerField(default=0)
     last_login_at = IntegerField()
     status = IntegerField()
+    is_parsed = BooleanField(null=False, default=False)
+    fake_email = BooleanField(null=False, default=False)
 
     @staticmethod
-    def crate_user(user_dto: UserDTO):
+    def crate_user(user_dto: UserDTO, email=True):
         """
         :param user_dto: UserDTO
         :return: UserModel
@@ -28,20 +30,41 @@ class UserModel(BaseModel):
         # exists = UserModel.get_or_none(UserModel.email == user_dto.email)
 
         # if not bool(exists):
-        row = UserModel(
-            email=user_dto.email,
-            username=user_dto.username,
-            password_hash=user_dto.password_hash,
-            auth_key=user_dto.auth_key,
-            confirmed_at=user_dto.confirmed_at,
-            # unconfirmed_email ???
-            # blocked_at ???
-            # registration_ip ???
-            created_at=user_dto.created_at,
-            updated_at=user_dto.updated_at,
-            # last_login_at ???
-            # status ???
-        )
+        if email == True:
+            row = UserModel(
+                email=user_dto.email,
+                username=user_dto.email,
+                password_hash=user_dto.password_hash,
+                auth_key=user_dto.auth_key,
+                confirmed_at=user_dto.confirmed_at,
+                # unconfirmed_email ???
+                # blocked_at ???
+                # registration_ip ???
+                created_at=user_dto.created_at,
+                updated_at=user_dto.updated_at,
+                # last_login_at ???
+                # status ???
+                is_parsed = True,
+            )
+        else:
+            row = UserModel(
+                email=user_dto.email,
+                username=user_dto.email,
+                password_hash=user_dto.password_hash,
+                auth_key=user_dto.auth_key,
+                confirmed_at=user_dto.confirmed_at,
+                # unconfirmed_email ???
+                # blocked_at ???
+                # registration_ip ???
+                created_at=user_dto.created_at,
+                updated_at=user_dto.updated_at,
+                # last_login_at ???
+                # status ???
+                is_parsed = True,
+                fake_email = True,
+            )
+
+            
         row.save()
 
         return row
